@@ -1,0 +1,15 @@
+name: agave
+version: 0.1.0
+
+authors:
+  - Jamie Gaskins <jgaskins@hey.com>
+
+targets:
+  agave-server: { main: src/agave-server.cr }
+
+development_dependencies:
+  redis: { github: jgaskins/redis }
+
+crystal: 1.0.0
+
+license: MIT

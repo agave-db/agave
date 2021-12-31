@@ -1,0 +1,12 @@
+/docs/
+/lib/
+/bin/
+/.shards/
+*.dwarf
+
+# Default backup filename
+backup.dump
+
+# Sentry
+/dev/sentry*
+/sentry
