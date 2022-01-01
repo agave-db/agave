@@ -4,6 +4,7 @@ require "log"
 require "./lock_pool"
 require "./commands/*"
 require "./types"
+require "./parser"
 
 module Agave
   class Server
@@ -204,61 +205,6 @@ module Agave
       @socket.close rescue nil
       @server.close self
       @closed = true
-    end
-  end
-
-  struct Parser
-    def initialize(@io : IO)
-    end
-
-    def read : Value
-      case byte_marker = @io.read_byte
-      when Nil
-        # Do nothing, the IO is closed/EOF
-        @io.close unless @io.closed?
-      when ':'
-        @io.read_line.to_i64
-      when '*'
-        length = @io.read_line.to_i64
-        if length >= 0
-          Array.new(length) { read }
-        end
-      when '$'
-        length = @io.read_line.to_i64
-        if length >= 0
-          string = @io.read_string length
-          @io.skip 2 # CRLF
-          string
-        end
-      when '%'
-        size = @io.read_line.to_i64
-        hash = Hash(String, Value).new(initial_capacity: size)
-        size.times do
-          key = read.as(String)
-          value = read
-          hash[key] = value
-        end
-        hash
-      when '~'
-        size = @io.read_line.to_i64
-        set = Set(Value).new(initial_capacity: size)
-        size.times { set << read }
-        set
-      when '+'
-        @io.read_line
-      when '-'
-        type, message = @io.read_line.split(2)
-        ClientError.new(type, message)
-        raise message
-      when '|' # Hack for reading times from a backup
-        @io.read_line
-      else
-        line = String.build do |s|
-          s.write_byte byte_marker
-          s << @io.read_line
-        end
-        line.split.map(&.as(Value))
-      end
     end
   end
 end

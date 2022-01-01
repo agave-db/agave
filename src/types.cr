@@ -3,6 +3,7 @@ module Agave
                       Int64 |
                       Float64 |
                       Bool |
+                      Time |
                       Array(Value) |
                       Hash(String, Value) |
                       Set(Value)
@@ -10,6 +11,7 @@ module Agave
                 Int64 |
                 Float64 |
                 Bool |
+                Time |
                 Array(Value) |
                 Hash(String, Value) |
                 Set(Value) |
@@ -100,6 +102,8 @@ class Hash
         case value
         when String
           hash[key] = Time::Format::RFC_3339.parse(value)
+        when Time
+          hash[key] = value
         else
           raise "Invalid expirations value: #{value.inspect}"
         end
@@ -141,7 +145,8 @@ end
 
 struct Time
   def to_resp3(io : IO)
-    io << '|'
+    io << '@'
     to_rfc3339(io, fraction_digits: 9)
+    io << "\r\n"
   end
 end

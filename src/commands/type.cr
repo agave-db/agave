@@ -10,6 +10,8 @@ Agave::Commands.define type do
     "float"
   in Bool
     "boolean"
+  in Time
+    "time"
   in Array
     "list"
   in Hash
