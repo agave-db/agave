@@ -1,7 +1,7 @@
 require "../commands"
 
 Agave::Commands.define set do
-  if (key = command[1]?.as?(String)) && (value = command[2]?)
+  if key && (value = command[2]?)
     lock key do
       check_expired! key
 
