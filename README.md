@@ -73,7 +73,19 @@ require "../commands"
 
 # Command: UPCASE key value
 Agave::Commands.define upcase do
+  # If the key has expired but the server has not swept it out yet, go ahead and
+  # do that now.
   check_expired! key
+
+  # Only operate on the key if it has a value
+  if value = data[key]?
+    # Can only upcase strings
+    if value.is_a? String
+      data[key] = value.upcase
+    else
+      ClientError.new("WRONGTYPE", "UPCASE must be called with a String key, but `#{key}` is a #{value.class}")
+    end
+  end
 end
 ```
 
