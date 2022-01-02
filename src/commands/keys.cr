@@ -12,7 +12,7 @@ Agave::Commands.define keys do
     pattern = Regex.new("\\A#{pattern}\\z")
 
     count = 0i64
-    @data.each_key do |key|
+    data.each_key do |key|
       check_expired! key, now: now
 
       if key =~ pattern
