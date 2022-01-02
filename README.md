@@ -36,10 +36,6 @@ Agave does not yet support multithreading, but it's being worked on. There is a 
 
 ## Installation
 
-### macOS
-
-- `brew install agave`
-
 ### Install from source
 
 First, you'll need to install the Crystal compiler.
@@ -51,20 +47,6 @@ shards build
 ```
 
 ## Usage
-
-If installed via Homebrew:
-
-```shell
-agave-server
-```
-
-With Docker:
-
-```shell
-docker run agavedb/agave
-```
-
-If built from source:
 
 ```shell
 bin/agave
