@@ -154,10 +154,21 @@ module Agave
       loop do
         sleep 30.seconds # TODO: Make configurable
 
-        File.open @snapshot_file, mode: "w" do |file|
+        backup_file = "backup.tmp"
+
+        # Write to a temporary file and then overwrite the old backup with it.
+        # If we write straight to the target backup file and it does not
+        # complete for (for example, the server runs OOM and crashes), we
+        # wouldn't have a working backup to fall back to because we would have
+        # overwritten it with a broken file. With the tempfile, if we crash
+        # while writing, we still have a working backup, even if it's out of
+        # date.
+        File.open backup_file, mode: "w" do |file|
           Log.debug { "Writing #{@data.size} keys to #{@snapshot_file}..." }
           [@data, @expirations].each(&.to_resp3(file))
         end
+
+        File.rename backup_file, @snapshot_file
       end
     end
   end

@@ -1,15 +1,23 @@
 # Agave DB
 
-An in-memory server for storing data structures. It is partly Redis-compatible, allowing you to use the Redis CLI, but the goal is not to clone Redis.
+An in-memory key/value store for data structures. It is partly Redis-compatible, allowing you to use the Redis CLI, but the goal is not to clone Redis.
 
 Agave was created in response to some of the common complaints about Redis in production:
 
-- Redis is single-threaded, so its vertical scalability is quite limited — once you reach a throughput limit, you can't simply give it more CPU
+- Redis blocks all commands while processing one
+  - You may have heard the refrain "Don't run `KEYS` in production"
 - Expanding beyond the capacity of a single CPU core requires clustering, which is a lot more complicated
   - Redis clustering puts significant constraints on key naming
   - Cluster-mode in Redis pushes a lot of the complexity out to the client drivers, which then have to delegate that complexity to the client applications
   - Redis clustering and replication are _entirely separate concepts_
 - While Redis _can_ represent data types other than just strings and arrays with RESP3, and there was a plan for Redis 6 to drop support for RESP2, the vast majority of the Redis ecosystem still depends on RESP2
+
+Agave aims to solve these:
+
+- Commands can choose to yield the CPU if it is potentially a long-running operation
+  - For example, the `KEYS` command in Agave yields after each batch of 10k keys. If no other commands are pending, it picks right back up. In practice, incurs a 1µs latency penalty per 10k keys.
+- Expanding beyond the capacity of a single CPU core will be implemented with multithreading. Agave is written in Crystal, which currently has little support for multithreading, but this project will contribute effort to improving that.
+- Agave supports rich, nested data structures. Commands will be implemented to drill down into nested structures.
 
 ## Data Types
 
