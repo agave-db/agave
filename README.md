@@ -27,6 +27,7 @@ Agave supports storing and serializing all of the following data types:
 - Integers
 - Floats (IEE754 double-precision)
 - Booleans (true/false only)
+- Timestamps
 - Arrays (lists implemented as arrays) of any of these types
 - Sets of any of these types
 - Hashes mapping string keys to values of any of these types
